@@ -26,24 +26,48 @@ function getHumanChoice() {
 let humanScore = 0;
 let computerScore = 0;
 
-function playRound(computerChoice, humanChoice) {
-  let humanWin =
-    (humanChoice === 'Rock' && computerChoice === 'Scissors') ||
-    (humanChoice === 'Paper' && computerChoice === 'Rock') ||
-    (humanChoice === 'Scissors' && computerChoice === 'Paper');
+function playGames() {
+  function playRound(computerChoice, humanChoice) {
+    let humanWin =
+      (humanChoice === 'Rock' && computerChoice === 'Scissors') ||
+      (humanChoice === 'Paper' && computerChoice === 'Rock') ||
+      (humanChoice === 'Scissors' && computerChoice === 'Paper');
 
-  if (humanChoice === computerChoice) {
-    console.log(`It's tie, ${humanChoice} vs ${computerChoice}`);
-    return;
+    if (humanChoice === computerChoice) {
+      console.log(`It's tie, ${humanChoice} vs ${computerChoice}`);
+      return;
+    }
+
+    if (humanWin) {
+      humanScore++;
+      console.log(`You Win! ${humanChoice} beats ${computerChoice}`);
+    } else {
+      computerScore++;
+      console.log(`You lose! ${computerChoice} beats ${humanChoice}`);
+    }
   }
 
-  if (humanWin) {
-    humanScore++;
-    console.log(`You Win! ${humanChoice} beats ${computerChoice}`);
+  for (let round = 1; round <= 5; round++) {
+    console.log(`--- Round ${round} ---`);
+    const humanSelection = getHumanChoice();
+    const computerSelection = getComputerChoice();
+    playRound(humanSelection, computerSelection);
+    console.log(`Score -> You: ${humanScore} | Computer: ${computerScore}`);
+  }
+
+  if (humanScore > computerScore) {
+    console.log(
+      `Congratulations! You won the game (${humanScore} - ${computerScore})!`,
+    );
+  } else if (computerScore > humanScore) {
+    console.log(
+      `Game over! The computer won (${computerScore} - ${humanScore}).`,
+    );
   } else {
-    computerScore++;
-    console.log(`You lose! ${computerChoice} beats ${humanChoice}`);
+    console.log(
+      `The overall game is a tie (${humanScore} - ${computerScore})!`,
+    );
   }
 }
 
-playRound(getComputerChoice(), getHumanChoice());
+playGames();
