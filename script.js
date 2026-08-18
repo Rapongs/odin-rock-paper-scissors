@@ -1,73 +1,63 @@
-function getComputerChoice() {
-  let computerChoice = Math.random();
-  if (computerChoice <= 1 / 3) {
-    return 'Rock';
-  } else if (computerChoice > 2 / 3) {
-    return 'Paper';
-  } else {
-    return 'Scissors';
-  }
-}
-
-function getHumanChoice() {
-  let humanChoice = window.prompt(
-    'Choose one (1: rock, 2: paper, 3:scissors): ',
-  );
-
-  if (humanChoice == 1) {
-    return 'Rock';
-  } else if (humanChoice == 2) {
-    return 'Paper';
-  } else {
-    return 'Scissors';
-  }
-}
-
-let humanScore = 0;
+let playerScore = 0;
 let computerScore = 0;
 
-function playGames() {
-  function playRound(computerChoice, humanChoice) {
-    let humanWin =
-      (humanChoice === 'Rock' && computerChoice === 'Scissors') ||
-      (humanChoice === 'Paper' && computerChoice === 'Rock') ||
-      (humanChoice === 'Scissors' && computerChoice === 'Paper');
+const rules = {
+  batu: { emoji: '🪨', beats: 'gunting' },
+  kertas: { emoji: '📄', beats: 'batu' },
+  gunting: { emoji: '✂️', beats: 'kertas' },
+};
 
-    if (humanChoice === computerChoice) {
-      console.log(`It's tie, ${humanChoice} vs ${computerChoice}`);
-      return;
-    }
+function play(playerSelection) {
+  const choices = Object.keys(rules);
+  const computerSelection = choices[Math.floor(Math.random() * choices.length)];
 
-    if (humanWin) {
-      humanScore++;
-      console.log(`You Win! ${humanChoice} beats ${computerChoice}`);
-    } else {
-      computerScore++;
-      console.log(`You lose! ${computerChoice} beats ${humanChoice}`);
-    }
-  }
+  document.getElementById('player-choice').textContent =
+    rules[playerSelection].emoji;
+  document.getElementById('computer-choice').textContent =
+    rules[computerSelection].emoji;
 
-  for (let round = 1; round <= 5; round++) {
-    console.log(`--- Round ${round} ---`);
-    const humanSelection = getHumanChoice();
-    const computerSelection = getComputerChoice();
-    playRound(humanSelection, computerSelection);
-    console.log(`Score -> You: ${humanScore} | Computer: ${computerScore}`);
-  }
+  const statusText = document.getElementById('status-text');
 
-  if (humanScore > computerScore) {
-    console.log(
-      `Congratulations! You won the game (${humanScore} - ${computerScore})!`,
-    );
-  } else if (computerScore > humanScore) {
-    console.log(
-      `Game over! The computer won (${computerScore} - ${humanScore}).`,
-    );
+  // 1. Hitung pemenang ronde & perbarui skor
+  if (playerSelection === computerSelection) {
+    statusText.textContent = 'Hasil Seri!';
+    statusText.style.color = 'var(--draw)';
+  } else if (rules[playerSelection].beats === computerSelection) {
+    playerScore++;
+    document.getElementById('player-score').textContent = playerScore;
+    statusText.textContent = 'Kamu Menang Ronde Ini! 🎉';
+    statusText.style.color = 'var(--win)';
   } else {
-    console.log(
-      `The overall game is a tie (${humanScore} - ${computerScore})!`,
-    );
+    computerScore++;
+    document.getElementById('computer-score').textContent = computerScore;
+    statusText.textContent = 'Komputer Menang Ronde Ini! 🤖';
+    statusText.style.color = 'var(--lose)';
+  }
+
+  // 2. Cek Game Over LANGSUNG setelah skor di-update
+  if (playerScore === 3 || computerScore === 3) {
+    if (playerScore > computerScore) {
+      statusText.textContent = 'GAME OVER: Kamu Menang Pertandingan! 🏆';
+      statusText.style.color = 'var(--win)';
+    } else {
+      statusText.textContent = 'GAME OVER: Komputer Menang Pertandingan! 💀';
+      statusText.style.color = 'var(--lose)';
+    }
+
+    // Reset skor di memori DAN tampilan layar setelah jeda singkat (opsional)
+    setTimeout(resetGame, 1500);
   }
 }
 
-playGames();
+function resetGame() {
+  playerScore = 0;
+  computerScore = 0;
+  document.getElementById('player-score').textContent = 0;
+  document.getElementById('computer-score').textContent = 0;
+  document.getElementById('player-choice').textContent = '❓';
+  document.getElementById('computer-choice').textContent = '❓';
+
+  const statusText = document.getElementById('status-text');
+  statusText.textContent = 'Pilih opsi di bawah untuk bermain';
+  statusText.style.color = 'var(--text)';
+}
